@@ -14,9 +14,14 @@ use Symfony\Component\Routing\Attribute\Route;
 class ProductApiController extends AbstractController
 {
     #[Route('', name: 'product_list', methods: ['GET'])]
-    public function index(ProductRepository $productRepository): JsonResponse
+    public function index(Request $request, ProductRepository $productRepository): JsonResponse
     {
-        $products = $productRepository->findAll();
+        $page = $request->query->getInt('page', 1);
+        $limit = $request->query->getInt('limit', 5);
+
+        $page = max(1, $page);
+        $limit = max(1, min(50, $limit));
+        $products = $productRepository->paginate($page, $limit);
 
         return $this->json($products);
     }
@@ -27,7 +32,7 @@ class ProductApiController extends AbstractController
     {
         $res = $productRepository->storeProduct(json_decode($request->getContent(), true));
 
-        return $this->json($res);
+        return $this->json($res, 201);
     }
 
     #[Route('/{id}', name: 'product_show', methods: ['GET'], format: 'json')]
@@ -35,30 +40,32 @@ class ProductApiController extends AbstractController
     {
         $product = $productRepository->find($id);
 
-        if (!$product) {
-            $this->json(['message' => 'Product not found'], 404);
+        if (is_null($product)) {
+            return $this->json(['message' => 'Product not found'], 404);
         }
 
         return $this->json($product);
     }
 
     #[Route('/{id}/edit', name: 'product_edit', methods: ['PUT'])]
-    public function update($id)
+    public function update(Request $request, ProductRepository $productRepository, $id): JsonResponse
     {
+        $product = $productRepository->updateProduct($id, json_decode($request->getContent(), true));
+
+        return $this->json($product, '200');
     }
 
     #[Route('/{id}', name: 'product_delete', methods: ['DELETE'])]
-    public function delete(EntityManagerInterface $entityManager, $id)
+    public function delete(ProductRepository $productRepository, $id)
     {
-        $product = $entityManager->getRepository(Product::class)->find($id);
+        $product = $productRepository->find($id);
 
         if (!$product) {
             return $this->json(['message' => 'Product not found'], 404);
         }
 
-        $entityManager->remove($product);
-        $entityManager->flush();
+        $productRepository->deleteProduct($id);
 
-        return $this->json(['message' => 'Product deleted']);
+        return $this->json(null, 204);
     }
 }

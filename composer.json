@@ -81,6 +81,7 @@
         }
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.6",
         "phpstan/phpstan": "*",
         "squizlabs/php_codesniffer": "*",
         "symfony/maker-bundle": "^1.60"
