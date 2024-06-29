@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/products')]
+#[Route('/api/products')]
 class ProductApiController extends AbstractController
 {
     #[Route('', name: 'product_list', methods: ['GET'])]
@@ -50,6 +50,11 @@ class ProductApiController extends AbstractController
     #[Route('/{id}/edit', name: 'product_edit', methods: ['PUT'])]
     public function update(Request $request, ProductRepository $productRepository, $id): JsonResponse
     {
+        $product = $productRepository->find($id);
+
+        if (is_null($product)) {
+            return $this->json(['message' => 'Product not found'], 404);
+        }
         $product = $productRepository->updateProduct($id, json_decode($request->getContent(), true));
 
         return $this->json($product, '200');
