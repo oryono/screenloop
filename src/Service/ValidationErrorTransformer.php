@@ -15,5 +15,4 @@ class ValidationErrorTransformer
 
         return $errors;
     }
-
 }
