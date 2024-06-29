@@ -14,8 +14,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 #[AllowDynamicProperties] class ProductRepository extends ServiceEntityRepository
 {
-    private $validator;
-    private $registry;
+    private ValidatorInterface $validator;
+    private ManagerRegistry $registry;
     public function __construct(ManagerRegistry $registry, ValidatorInterface $validator)
     {
         $this->validator = $validator;
@@ -23,11 +23,14 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
         parent::__construct($registry, Product::class);
     }
 
-    public function storeProduct($body)
+    public function storeProduct($body): Product
     {
         $product = new Product();
         $product->setName($body['name']);
         $product->setDescription($body['description']);
+        $product->setPrice($body['price']);
+        $product->setExpiryDate(new \DateTime($body['expiry_date']));
+        $product->setDateOfManufacture(new \DateTime($body['date_of_manufacture']));
 
         $errors = $this->validator->validate($product);
 
@@ -42,28 +45,56 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
         return $product;
     }
 
-    //    /**
-    //     * @return Product[] Returns an array of Product objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function paginate(mixed $page, mixed $limit)
+    {
+        $query = $this->createQueryBuilder('p')
+            ->orderBy('p.id', 'ASC')
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit)
+            ->getQuery();
 
-    //    public function findOneBySomeField($value): ?Product
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return $query->getResult();
+    }
+
+    public function updateProduct($id, $body): Product
+    {
+        $product = $this->find($id);
+
+        if (isset($body['name'])) {
+            $product->setName($body['name']);
+        }
+
+        if (isset($body['description'])) {
+            $product->setDescription($body['description']);
+        }
+
+        if (isset($body['price'])) {
+            $product->setPrice($body['price']);
+        }
+
+        if (isset($body['expiry_date'])) {
+            $product->setExpiryDate(new \DateTime($body['expiry_date']));
+        }
+        if (isset($body['date_of_manufacture'])) {
+            $product->setDateOfManufacture(new \DateTime($body['date_of_manufacture']));
+        }
+
+        $errors = $this->validator->validate($product);
+
+        // Throw ValidatorException if validation fails
+        if (count($errors) > 0) {
+            throw new ValidationException($errors);
+        }
+
+        $this->registry->getManager()->persist($product);
+        $this->registry->getManager()->flush();
+
+        return $product;
+    }
+
+    public function deleteProduct($id)
+    {
+        $this->registry->getManager()->remove($this->find($id));
+        $this->registry->getManager()->flush();
+    }
 }
