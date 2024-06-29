@@ -37,5 +37,4 @@ class ValidationErrorSubscriber implements EventSubscriberInterface
             $event->setResponse($response);
         }
     }
-
 }

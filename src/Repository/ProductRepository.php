@@ -14,6 +14,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 #[AllowDynamicProperties] class ProductRepository extends ServiceEntityRepository
 {
+    private $validator;
+    private $registry;
     public function __construct(ManagerRegistry $registry, ValidatorInterface $validator)
     {
         $this->validator = $validator;

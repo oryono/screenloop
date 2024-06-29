@@ -63,6 +63,12 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "phpstan": [
+            "phpstan analyse --no-progress"
+        ],
+        "phpcs": [
+            "phpcs"
         ]
     },
     "conflict": {
@@ -75,6 +81,8 @@
         }
     },
     "require-dev": {
+        "phpstan/phpstan": "*",
+        "squizlabs/php_codesniffer": "*",
         "symfony/maker-bundle": "^1.60"
     }
 }
