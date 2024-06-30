@@ -208,11 +208,9 @@ Accept: application/json
 ```
 
 ### Successful request (204)
-```json
-{
-  
-}
-```
+
+
+### Failed response
 
 
 
