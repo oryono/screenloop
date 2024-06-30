@@ -212,8 +212,6 @@ class ProductApiControllerTest extends WebTestCase
                 }'
         );
 
-        dump($this->client->getRequest());
-
         return json_decode($this->client->getResponse()->getContent(), true)['id'];
     }
 }

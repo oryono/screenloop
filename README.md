@@ -42,14 +42,27 @@ bin/setup_test_db.sh
 bin/seed_test.sh
 ```
 
-### Step 2: Run phpunit
+### Step 3: Run tests
 ```bash
 bin/phpunit.sh
+composer run phpstan
+composer run phpcs
 ```
+
+### Test results for PHP stan and code sniffer
+![img.png](img.png)
+
+### PHP Unit test results
+![img_1.png](img_1.png)
+
+
+
+
 
 
 ## API Documentation
 ### Authentication
+You have to authenticate and get a token to access the product routes
 ### Login
 
 #### Endpoint: POST `/api/login`
@@ -101,14 +114,6 @@ Accept: application/json
   },
   ...
 ]
-```
-
-#### Failed Response
-
-```json
-{
-  "message": "Invalid login credentials"
-}
 ```
 
 #### Endpoint: GET `GET /api/products/{id}`
@@ -172,8 +177,9 @@ Body
 {
   "errors": [
     "description": [
-      ""
-    ]
+      "This value should not be blank"
+    ],
+    ...
   ]
 }
 ```
@@ -207,11 +213,6 @@ Body
 }
 ```
 
-### Failed response (400)
-```json
-
-```
-
 #### Endpoint: DELETE `POST /api/products/{id}`
 Delete product
 
@@ -222,9 +223,6 @@ Accept: application/json
 ```
 
 ### Successful request (204)
-
-
-### Failed response
 
 
 

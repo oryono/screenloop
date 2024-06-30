@@ -116,7 +116,7 @@ class Product
         $this->updated_at = new \DateTime();
     }
 
-    public function getPrice(): ?string
+    public function getPrice(): ?float
     {
         return $this->price;
     }

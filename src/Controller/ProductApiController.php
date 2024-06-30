@@ -57,7 +57,7 @@ class ProductApiController extends AbstractController
         }
         $product = $productRepository->updateProduct($id, json_decode($request->getContent(), true));
 
-        return $this->json($product, '200');
+        return $this->json($product);
     }
 
     #[Route('/{id}', name: 'product_delete', methods: ['DELETE'])]
