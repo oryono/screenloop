@@ -32,6 +32,20 @@ docker-compose up --build
 ```
 
 ## Testing
+### Step 1: Setup Test database
+```bash
+bin/setup_test_db.sh
+```
+
+### Step 2: Seed database
+```bash
+bin/seed_test.sh
+```
+
+### Step 2: Run phpunit
+```bash
+bin/phpunit.sh
+```
 
 
 ## API Documentation
