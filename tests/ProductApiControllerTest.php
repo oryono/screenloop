@@ -201,6 +201,20 @@ class ProductApiControllerTest extends WebTestCase
     private function createProduct()
     {
         // Create the product
+        $this->client->request(
+            'POST',
+            '/api/login',
+            [],
+            [],
+            [],
+            json_encode(['username' => 'patrick.oryono@gmail.com', 'password' => 'football'])
+        );
+
+        $response = $this->client->getResponse();
+
+        $content = $response->getContent();
+
+        $token = json_decode($content, true)['token'];
 
         $this->client->request(
             'POST',
@@ -209,7 +223,7 @@ class ProductApiControllerTest extends WebTestCase
             [],
             [
                 'HTTP_ACCEPT' => 'application/json',
-                'HTTP_AUTHORIZATION' => "Bearer {$this->token}",
+                'HTTP_AUTHORIZATION' => "Bearer {$token}",
             ],
             '{
                     "name": "product 11",
