@@ -7,6 +7,6 @@ fi
 
 # Run Doctrine migrations
 echo "Running Doctrine migrations..."
-docker-compose exec app php bin/console doctrine:migrations:migrate --no-interaction
+docker-compose exec app ./bin/phpunit
 
 echo "Migrations  completed successfully."

@@ -14,7 +14,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
     {
         $this->passwordHasher = $passwordHasher;
     }
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
 
         $user = new User();
