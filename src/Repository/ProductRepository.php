@@ -26,11 +26,25 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
     public function storeProduct($body): Product
     {
         $product = new Product();
-        $product->setName($body['name']);
-        $product->setDescription($body['description']);
-        $product->setPrice($body['price']);
-        $product->setExpiryDate(new \DateTime($body['expiry_date']));
-        $product->setDateOfManufacture(new \DateTime($body['date_of_manufacture']));
+        if (isset($body['name'])) {
+            $product->setName($body['name']);
+        }
+        if (isset($body['description'])) {
+            $product->setDescription($body['description']);
+        }
+        if (isset($body['price'])) {
+            $product->setPrice($body['price']);
+        }
+
+        if (isset($body['expiry_date'])) {
+            $product->setExpiryDate(new \DateTime($body['expiry_date']));
+        }
+
+        if (isset($body['date_of_manufacture'])) {
+            $product->setDateOfManufacture(new \DateTime($body['date_of_manufacture']));
+        }
+
+
 
         $errors = $this->validator->validate($product);
 

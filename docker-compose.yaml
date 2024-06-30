@@ -23,7 +23,7 @@ services:
     volumes:
       - .:/var/www/html
     environment:
-      - SYMFONY_ENV=dev
+      - SYMFONY_ENV=${APP_ENV}
       - DATABASE_URL=pgsql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
 
   database:
