@@ -67,7 +67,6 @@ class ProductApiControllerTest extends WebTestCase
         $this->client->request(
             'GET',
             "/api/products/$product",
-
             [],
             [],
             [
@@ -114,7 +113,6 @@ class ProductApiControllerTest extends WebTestCase
         $this->client->request(
             'GET',
             "/api/products/$product",
-
             [],
             [],
             [
@@ -135,9 +133,7 @@ class ProductApiControllerTest extends WebTestCase
 
         $this->client->request(
             'PUT',
-
             "/api/products/$product/edit",
-
             [],
             [],
             [
@@ -162,7 +158,6 @@ class ProductApiControllerTest extends WebTestCase
         $this->client->request(
             'DELETE',
             "/api/products/$product",
-
             [],
             [],
             [
