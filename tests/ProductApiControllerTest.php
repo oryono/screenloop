@@ -9,12 +9,22 @@ class ProductApiControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
 
-    private string $token;
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
+    }
 
+    public function testFailsWithoutAuthentication()
+    {
+        $this->client->request('GET', '/api/products');
+
+        $this->assertEquals(401, $this->client->getResponse()->getStatusCode());
+        $this->assertJson($this->client->getResponse()->getContent());
+    }
+
+    public function testGetProducts()
+    {
         $this->client->request(
             'POST',
             '/api/login',
@@ -27,6 +37,7 @@ class ProductApiControllerTest extends WebTestCase
         $response = $this->client->getResponse();
 
         $content = $response->getContent();
+
 
         $this->token = json_decode($content, true)['token'];
     }
@@ -41,6 +52,7 @@ class ProductApiControllerTest extends WebTestCase
 
     public function testGetProducts()
     {
+
         $this->client->request(
             'GET',
             '/api/products',
@@ -49,6 +61,7 @@ class ProductApiControllerTest extends WebTestCase
             [
                 'HTTP_ACCEPT' => 'application/json',
                 'HTTP_AUTHORIZATION' => "Bearer {$this->token}",
+
             ]
         );
 
@@ -62,15 +75,16 @@ class ProductApiControllerTest extends WebTestCase
         // Create the product
         $product = $this->createProduct();
 
-
         $this->client->request(
             'GET',
             "/api/products/$product",
+
             [],
             [],
             [
                 'HTTP_ACCEPT' => 'application/json',
                 'HTTP_AUTHORIZATION' => "Bearer {$this->token}",
+
             ]
         );
 
@@ -80,8 +94,6 @@ class ProductApiControllerTest extends WebTestCase
 
     public function testCreateProduct()
     {
-
-
         $this->client->request(
             'POST',
             '/api/products',
@@ -90,6 +102,7 @@ class ProductApiControllerTest extends WebTestCase
             [
                 'HTTP_ACCEPT' => 'application/json',
                 'HTTP_AUTHORIZATION' => "Bearer {$this->token}",
+
             ],
             '{
                     "name": "product 11",
@@ -113,11 +126,13 @@ class ProductApiControllerTest extends WebTestCase
         $this->client->request(
             'GET',
             "/api/products/$product",
+
             [],
             [],
             [
                 'HTTP_ACCEPT' => 'application/json',
                 'HTTP_AUTHORIZATION' => "Bearer {$this->token}",
+
             ]
         );
 
@@ -133,12 +148,15 @@ class ProductApiControllerTest extends WebTestCase
 
         $this->client->request(
             'PUT',
+
             "/api/products/$product/edit",
+
             [],
             [],
             [
                 'HTTP_ACCEPT' => 'application/json',
                 'HTTP_AUTHORIZATION' => "Bearer {$this->token}",
+
             ],
             '{
     "name": "Product Eleven"
@@ -158,11 +176,13 @@ class ProductApiControllerTest extends WebTestCase
         $this->client->request(
             'DELETE',
             "/api/products/$product",
+
             [],
             [],
             [
                 'HTTP_ACCEPT' => 'application/json',
                 'HTTP_AUTHORIZATION' => "Bearer {$this->token}",
+
             ],
             '{
     "name": "Product Eleven"
@@ -201,6 +221,7 @@ class ProductApiControllerTest extends WebTestCase
     private function createProduct()
     {
         // Create the product
+
         $this->client->request(
             'POST',
             '/api/products',
@@ -220,5 +241,6 @@ class ProductApiControllerTest extends WebTestCase
         );
 
         return json_decode($this->client->getResponse()->getContent(), true)['id'];
+
     }
 }
