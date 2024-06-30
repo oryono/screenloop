@@ -29,7 +29,6 @@ class ProductApiControllerTest extends WebTestCase
 
         $content = $response->getContent();
 
-
         $this->token = json_decode($content, true)['token'];
     }
 
