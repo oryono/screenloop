@@ -8,14 +8,16 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class ProductApiControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
-
     private string $token;
-
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
+        $this->obtainAuthToken();
+    }
 
+    private function obtainAuthToken(): void
+    {
         $this->client->request(
             'POST',
             '/api/login',
@@ -26,8 +28,11 @@ class ProductApiControllerTest extends WebTestCase
         );
 
         $response = $this->client->getResponse();
-
         $content = $response->getContent();
+
+        if ($response->getStatusCode() !== 200) {
+            throw new \Exception('Failed to obtain authentication token.');
+        }
 
         $this->token = json_decode($content, true)['token'];
     }
@@ -35,7 +40,6 @@ class ProductApiControllerTest extends WebTestCase
     public function testFailsWithoutAuthentication()
     {
         $this->client->request('GET', '/api/products');
-
         $this->assertEquals(401, $this->client->getResponse()->getStatusCode());
         $this->assertJson($this->client->getResponse()->getContent());
     }
@@ -50,7 +54,6 @@ class ProductApiControllerTest extends WebTestCase
             [
                 'HTTP_ACCEPT' => 'application/json',
                 'HTTP_AUTHORIZATION' => "Bearer {$this->token}",
-
             ]
         );
 
@@ -60,18 +63,15 @@ class ProductApiControllerTest extends WebTestCase
 
     public function testGetProduct()
     {
-        // Create the product
-        $product = $this->createProduct();
-
+        $productId = $this->createProduct();
         $this->client->request(
             'GET',
-            "/api/products/$product",
+            "/api/products/$productId",
             [],
             [],
             [
                 'HTTP_ACCEPT' => 'application/json',
                 'HTTP_AUTHORIZATION' => "Bearer {$this->token}",
-
             ]
         );
 
@@ -89,84 +89,64 @@ class ProductApiControllerTest extends WebTestCase
             [
                 'HTTP_ACCEPT' => 'application/json',
                 'HTTP_AUTHORIZATION' => "Bearer {$this->token}",
-
             ],
             '{
-                    "name": "product 11",
-                    "description": "some",
-                    "price": 10,
-                    "expiry_date": "2024-10-31",
-                    "date_of_manufacture": "2024-04-30"
-                }'
+                "name": "Product 11",
+                "description": "some",
+                "price": 10,
+                "expiry_date": "2024-10-31",
+                "date_of_manufacture": "2024-04-30"
+            }'
         );
 
-        $this->assertEquals(201, $this->client->getResponse()->getStatusCode());
-        $this->assertEquals('product 11', json_decode($this->client->getResponse()->getContent(), true)['name']);
+        $response = $this->client->getResponse();
+        $this->assertEquals(201, $response->getStatusCode());
+        $responseData = json_decode($response->getContent(), true);
+        $this->assertEquals('Product 11', $responseData['name']);
+        $this->assertArrayHasKey('id', $responseData);
     }
 
-    public function testGetSingleProduct()
-    {
-        // Create the product
-        $product = $this->createProduct();
-
-        $this->client->request(
-            'GET',
-            "/api/products/$product",
-            [],
-            [],
-            [
-                'HTTP_ACCEPT' => 'application/json',
-                'HTTP_AUTHORIZATION' => "Bearer {$this->token}",
-
-            ]
-        );
-
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-    }
-
+    /**
+     * @depends testCreateProduct
+     */
     public function testUpdateProduct()
     {
-        // Create the product
-        $product = $this->createProduct();
-
-
+        $productId = $this->createProduct();
         $this->client->request(
             'PUT',
-            "/api/products/$product/edit",
+            "/api/products/$productId/edit",
             [],
             [],
             [
                 'HTTP_ACCEPT' => 'application/json',
                 'HTTP_AUTHORIZATION' => "Bearer {$this->token}",
-
             ],
             '{
-    "name": "Product Eleven"
-}'
+                "name": "Updated Product 11"
+            }'
         );
 
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-        $this->assertEquals('Product Eleven', json_decode($this->client->getResponse()->getContent(), true)['name']);
+        $response = $this->client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+        $responseData = json_decode($response->getContent(), true);
+        $this->assertEquals('Updated Product 11', $responseData['name']);
     }
 
+    /**
+     * @depends testCreateProduct
+     */
     public function testDeleteProduct()
     {
-        // Create the product
-        $product = $this->createProduct();
-
+        $productId = $this->createProduct();
         $this->client->request(
             'DELETE',
-            "/api/products/$product",
+            "/api/products/$productId",
             [],
             [],
             [
                 'HTTP_ACCEPT' => 'application/json',
                 'HTTP_AUTHORIZATION' => "Bearer {$this->token}",
-
-            ],
-            '{
-    "name": "Product Eleven"
-}'
+            ]
         );
 
         $this->assertEquals(204, $this->client->getResponse()->getStatusCode());
@@ -184,18 +164,16 @@ class ProductApiControllerTest extends WebTestCase
                 'HTTP_AUTHORIZATION' => "Bearer {$this->token}",
             ],
             '{
-                    "name": ""
-                }'
+                "name": ""
+            }'
         );
 
-        $content = $this->client->getResponse()->getContent();
-
-        $data = json_decode($content, true);
-
-        $this->assertArrayHasKey('errors', $data);
-        $this->assertArrayHasKey('name', $data['errors']);
-        $this->assertEquals('This value should not be blank.', $data['errors']['name'][0]);
-        $this->assertEquals(400, $this->client->getResponse()->getStatusCode());
+        $response = $this->client->getResponse();
+        $this->assertEquals(400, $response->getStatusCode());
+        $responseData = json_decode($response->getContent(), true);
+        $this->assertArrayHasKey('errors', $responseData);
+        $this->assertArrayHasKey('name', $responseData['errors']);
+        $this->assertEquals('This value should not be blank.', $responseData['errors']['name'][0]);
     }
 
     private function createProduct()
