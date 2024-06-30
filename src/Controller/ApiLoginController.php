@@ -24,7 +24,7 @@ class ApiLoginController extends AbstractController
         $user = $userRepository->findOneBy(['email' => $username]);
 
         if (!$user || !password_verify($password, $user->getPassword())) {
-            return $this->json(['message' => 'Invalid login credentials.']);
+            return $this->json(['message' => 'Invalid login credentials.'], 401);
         }
 
         $token = $JWTTokenManager->create($user);

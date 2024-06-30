@@ -29,7 +29,7 @@ class Product
 
     #[ORM\Column(type: Types::DECIMAL)]
     #[Assert\NotBlank]
-    private ?int $price = null;
+    private ?float $price = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotBlank]
@@ -121,7 +121,7 @@ class Product
         return $this->price;
     }
 
-    public function setPrice(?string $price): void
+    public function setPrice($price): void
     {
         $this->price = $price;
     }
