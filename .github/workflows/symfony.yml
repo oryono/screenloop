@@ -61,5 +61,5 @@ jobs:
 
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         env:
-          DATABASE_URL: ${{ env.DATABASE_URL }}
+          DATABASE_URL: postgresql://app:password@localhost:5432/app
         run: vendor/bin/phpunit
