@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:${{ env.POSTGRES_VERSION }}-alpine
+        image: postgres:16-alpine
         env:
           POSTGRES_DB: app
           POSTGRES_USER: app
@@ -24,7 +24,7 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     env:
-      DATABASE_URL: postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
+      DATABASE_URL: postgresql://app:password@localhost:5432/app
 
     steps:
       - uses: actions/checkout@v4
@@ -53,6 +53,4 @@ jobs:
         run: php bin/console doctrine:fixtures:load --env=test --no-interaction
 
       - name: Execute tests (Unit and Feature tests) via PHPUnit
-        env:
-          DATABASE_URL: ${{ env.DATABASE_URL }}
         run: vendor/bin/phpunit
