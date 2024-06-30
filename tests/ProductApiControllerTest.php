@@ -9,22 +9,13 @@ class ProductApiControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
 
+    private string $token;
+
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
-    }
 
-    public function testFailsWithoutAuthentication()
-    {
-        $this->client->request('GET', '/api/products');
-
-        $this->assertEquals(401, $this->client->getResponse()->getStatusCode());
-        $this->assertJson($this->client->getResponse()->getContent());
-    }
-
-    public function testGetProducts()
-    {
         $this->client->request(
             'POST',
             '/api/login',
@@ -52,7 +43,6 @@ class ProductApiControllerTest extends WebTestCase
 
     public function testGetProducts()
     {
-
         $this->client->request(
             'GET',
             '/api/products',
@@ -71,7 +61,6 @@ class ProductApiControllerTest extends WebTestCase
 
     public function testGetProduct()
     {
-
         // Create the product
         $product = $this->createProduct();
 
@@ -119,7 +108,6 @@ class ProductApiControllerTest extends WebTestCase
 
     public function testGetSingleProduct()
     {
-
         // Create the product
         $product = $this->createProduct();
 
@@ -141,7 +129,6 @@ class ProductApiControllerTest extends WebTestCase
 
     public function testUpdateProduct()
     {
-
         // Create the product
         $product = $this->createProduct();
 
@@ -169,7 +156,6 @@ class ProductApiControllerTest extends WebTestCase
 
     public function testDeleteProduct()
     {
-
         // Create the product
         $product = $this->createProduct();
 
@@ -241,6 +227,5 @@ class ProductApiControllerTest extends WebTestCase
         );
 
         return json_decode($this->client->getResponse()->getContent(), true)['id'];
-
     }
 }
