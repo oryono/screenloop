@@ -28,9 +28,6 @@ class ValidationErrorSubscriber implements EventSubscriberInterface
     public function onKernelException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
-
-        $exception = $event->getThrowable();
-
         if ($exception instanceof ValidationException) {
             $errorsArray = $this->errorTransformer->transform($exception->getViolations());
             $response = new JsonResponse(['errors' => $errorsArray], 400);

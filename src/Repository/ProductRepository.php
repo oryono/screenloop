@@ -26,29 +26,11 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
     public function storeProduct($body): Product
     {
         $product = new Product();
-        if (isset($body['name'])) {
-            $product->setName($body['name']);
-        }
-        if (isset($body['description'])) {
-            $product->setDescription($body['description']);
-        }
-        if (isset($body['price'])) {
-            $product->setPrice($body['price']);
-        }
-
-        if (isset($body['expiry_date'])) {
-            $product->setExpiryDate(new \DateTime($body['expiry_date']));
-        }
-
-        if (isset($body['date_of_manufacture'])) {
-            $product->setDateOfManufacture(new \DateTime($body['date_of_manufacture']));
-        }
-
-
+        $this->setProduct($body, $product);
 
         $errors = $this->validator->validate($product);
 
-        // Throw ValidatorException if validation fails
+        // Throw ValidationException if validation fails
         if (count($errors) > 0) {
             throw new ValidationException($errors);
         }
@@ -74,24 +56,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
     {
         $product = $this->find($id);
 
-        if (isset($body['name'])) {
-            $product->setName($body['name']);
-        }
-
-        if (isset($body['description'])) {
-            $product->setDescription($body['description']);
-        }
-
-        if (isset($body['price'])) {
-            $product->setPrice($body['price']);
-        }
-
-        if (isset($body['expiry_date'])) {
-            $product->setExpiryDate(new \DateTime($body['expiry_date']));
-        }
-        if (isset($body['date_of_manufacture'])) {
-            $product->setDateOfManufacture(new \DateTime($body['date_of_manufacture']));
-        }
+        $this->setProduct($body, $product);
 
         $errors = $this->validator->validate($product);
 
@@ -110,5 +75,27 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
     {
         $this->registry->getManager()->remove($this->find($id));
         $this->registry->getManager()->flush();
+    }
+
+    private function setProduct($body, Product $product): void
+    {
+        if (isset($body['name'])) {
+            $product->setName($body['name']);
+        }
+
+        if (isset($body['description'])) {
+            $product->setDescription($body['description']);
+        }
+
+        if (isset($body['price'])) {
+            $product->setPrice($body['price']);
+        }
+
+        if (isset($body['expiry_date'])) {
+            $product->setExpiryDate(new \DateTime($body['expiry_date']));
+        }
+        if (isset($body['date_of_manufacture'])) {
+            $product->setDateOfManufacture(new \DateTime($body['date_of_manufacture']));
+        }
     }
 }

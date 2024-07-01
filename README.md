@@ -62,7 +62,7 @@ composer run phpcs
 
 ## API Documentation
 ### Authentication
-You have to authenticate and get a token to access the product routes
+You have to authenticate and get a token to access the product routes. A token must be passed via headers `Authorization: Bearer your_token` to access the routes. Missing authorization header causes a 401 status code
 ### Login
 
 #### Endpoint: POST `/api/login`
@@ -81,7 +81,7 @@ Body
 }
 ```
 
-#### Failed Response
+#### Failed Response (401)
 ```json
 {
   "message": "Invalid login credentials"
@@ -99,7 +99,7 @@ Authorization: Bearer your_jwt_token
 Accept: application/json
 ```
 
-#### Successful Response
+#### Successful Response(200)
 ```json
 [
   {
@@ -196,7 +196,7 @@ Accept: application/json
 Body
 ```json
 {
-  "expiry_date": "2024-10-31",
+  "description": "some description",
   "date_of_manufacture": "2024-04-30"
 }
 ```
@@ -213,6 +213,18 @@ Body
 }
 ```
 
+#### Failed response (400)
+```json
+{
+  "errors": [
+    "description": [
+      "This value should not be blank"
+    ],
+    ...
+  ]
+}
+```
+
 #### Endpoint: DELETE `POST /api/products/{id}`
 Delete product
 
@@ -223,6 +235,15 @@ Accept: application/json
 ```
 
 ### Successful request (204)
+The response body is empty but the status code is 204
+
+## Notes
+- The sh scripts exec into the app container to run commands such as migrating, seeding and phpunit tests in the container and not outside
+- I had wanted to implement ci however I could not figure out why tests were failing on CI on time, so i removed it(Commit `15e634421a741a5dab2c88fd3016c8283e5a77d3`). In the future that's an improvement i could make if time allows
+- In the future i could implement swagger docs for api documentation. For now I just described the endpoints in the readme
+- For phpunit tests, I would have loved to insert data in something like a setup method and then clear it afterwards, but could not figure it out on time. That or a better way to do it could be an improvement i could make in a future version of the codebase
+- In the `Product` entity, essentially price column should be a decimal in the database table. In the time i did the assignment i could not get the right type that could trigger the migration to create a decimal.
+- I have always been a Laravel developer but had never done symfony framework. I have had to read the docs for this assignment. I still dont know the symfony best practices but with time and more reading, I should get there
 
 
 
